@@ -15,7 +15,7 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Formula, Tseitin
+  exposed-modules:     Formula, Formula.Parser, Formula.Tseitin, Formula.Models
   build-depends:       base >= 4.7 && < 5,
                        megaparsec >= 4.0,
                        containers >= 0.5.6

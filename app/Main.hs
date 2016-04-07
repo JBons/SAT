@@ -1,6 +1,6 @@
 module Main where
 
-import Formula
+import qualified Formula as F
 
 main :: IO ()
 main = print "Not implemented"
