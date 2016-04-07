@@ -1,21 +1,21 @@
 name:                sat
 version:             0.1.0.0
-synopsis:            Initial project template from stack
+synopsis:            Tseitin transform and other tools for SAT solver
 description:         Please see README.md
 homepage:            https://github.com/githubuser/sat#readme
 license:             BSD3
 license-file:        LICENSE
-author:              Author name here
-maintainer:          example@example.com
-copyright:           2016 Author name here
-category:            Web
+author:              Juhani Bonsdorff
+maintainer:          Juhani.Bonsdorff@gmail.com
+copyright:           2016 Juhani Bonsdorff
+category:            Logic
 build-type:          Simple
 -- extra-source-files:
 cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Lib, Logexp
+  exposed-modules:     Formula
   build-depends:       base >= 4.7 && < 5,
                        megaparsec >= 4.0
   default-language:    Haskell2010

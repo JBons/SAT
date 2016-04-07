@@ -1,6 +1,6 @@
 module Main where
 
-import Lib
+import Formula
 
 main :: IO ()
-main = someFunc
+main = print "Not implemented"

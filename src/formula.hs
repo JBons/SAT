@@ -1,7 +1,7 @@
 {-# LANGUAGE FlexibleContexts          #-}
 {-# LANGUAGE NoMonomorphismRestriction #-}
 
-module Logexp where
+module Formula where
 
 import           Control.Applicative
 import           Control.Monad
