@@ -3,8 +3,10 @@
 
 module Formula where
 
-import           Control.Applicative
-import           Control.Monad
+import           Prelude hiding (filter,map)
+import           Data.Set(singleton,union,Set,filter,map)
+import           Control.Applicative(empty)
+import           Control.Monad(void)
 import           Text.Megaparsec
 import           Text.Megaparsec.Expr
 import qualified Text.Megaparsec.Lexer  as L
@@ -12,15 +14,28 @@ import           Text.Megaparsec.String
 
 default (Int, Float)
 
-
-data Ident = Name String | Nr Int deriving (Show, Eq)
+data Ident = Name String | Nr Int deriving (Show, Eq, Ord)
 
 data Formula =
       Var Ident | Not Formula
      | And Formula Formula | Or Formula Formula
         deriving (Show,Eq)
 
-equiv a b = Not( And a (Not b) )
+equiv :: Formula -> Formula -> Formula
+equiv a b = And (Not( And a (Not b) )) (Not( And (Not a) b ))
+
+identifiers :: Formula -> Set Ident
+identifiers formula = case formula of
+     Var id       -> singleton id
+     Not(Var id)  -> singleton id
+     And a b      -> identifiers a `union` identifiers b
+     Or a b       -> identifiers a `union` identifiers b
+
+varNumbers :: Formula -> Set Int
+varNumbers formula =
+    map (\(Nr n) -> n) $ filter numbered (identifiers formula) where
+        numbered (Nr _)   = True
+        numbered (Name _) = False
 
 toString :: Formula -> String
 toString (Var identifier) = case identifier of
@@ -34,10 +49,13 @@ toString (And left right) =
 toString (Or left right) =
     "(" ++ toString left ++ " | " ++ toString right ++ ")"
 
+
+
+
+
 --
 -- Parser for logical expressions
 --
-
 -- Lexer
 sc :: Parser() -- NEEDED type annotation to allow inference for others!
 sc =L.space (void spaceChar) empty empty -- "space consumer - no comments"
