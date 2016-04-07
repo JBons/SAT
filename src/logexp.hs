@@ -1,8 +1,17 @@
+{-# LANGUAGE FlexibleContexts          #-}
+{-# LANGUAGE NoMonomorphismRestriction #-}
+
 module Logexp where
 
+import           Control.Applicative
+import           Control.Monad
+import           Text.Megaparsec
 import           Text.Megaparsec.Expr
+import qualified Text.Megaparsec.Lexer  as L
+import           Text.Megaparsec.String
 
 default (Int, Float)
+
 
 data Ident = Name String | Nr Int deriving (Show, Eq)
 
@@ -17,15 +26,45 @@ toString (Var identifier) = case identifier of
     Nr n -> "v" ++ show n
 toString (Not formula) = case formula of
     Var _ -> "~" ++ toString formula
-    _     -> "¬(" ++ toString formula ++ ")"
+    _     -> "~(" ++ toString formula ++ ")"
 toString (And left right) =
-    "(" ++ toString left ++ " A " ++ toString right ++ ")"
+    "(" ++ toString left ++ " & " ++ toString right ++ ")"
 toString (Or left right) =
-    "(" ++ toString left ++ " V " ++ toString right ++ ")"
+    "(" ++ toString left ++ " | " ++ toString right ++ ")"
 
 -- Simple test formula below - REMOVE LATER
 f = And (Var (Nr 1)) (Or (Var(Name "a")) (Not(Var(Name "b"))))
 
 --
 -- Parser for logical expressions
--- 
+--
+
+-- Lexer
+sc :: Parser() -- NEEDED type annotation to allow inference for others!
+sc =L.space (void spaceChar) empty empty -- "space consumer - no comments"
+
+lexeme = L.lexeme sc
+symbol = L.symbol sc
+
+parens = between (symbol "(")  (symbol ")")
+
+numIdent :: Parser Ident
+numIdent = Nr . read <$> lexeme ( oneOf "v" *> some digitChar )
+strIdent :: Parser Ident
+strIdent = Name <$> lexeme ( some letterChar ) -- is this now sensitive to ordering?
+--Parser
+formula :: Parser Formula
+formula = makeExprParser terms ops
+
+ops :: [[Operator Parser Formula]]
+ops = [ [ Prefix (symbol "~" *> pure Not)],
+        [ InfixL (symbol "&" *> pure And)],
+        [ InfixL (symbol "|" *> pure Or)] ]
+
+terms :: Parser Formula
+terms =  parens formula
+     <|> try (Var <$> numIdent)
+     <|> Var <$> strIdent
+
+pf :: String -> Either ParseError Formula
+pf = runParser formula ""
