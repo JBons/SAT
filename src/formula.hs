@@ -20,6 +20,8 @@ data Formula =
      | And Formula Formula | Or Formula Formula
         deriving (Show,Eq)
 
+equiv a b = Not( And a (Not b) )
+
 toString :: Formula -> String
 toString (Var identifier) = case identifier of
     Name s -> s
@@ -31,9 +33,6 @@ toString (And left right) =
     "(" ++ toString left ++ " & " ++ toString right ++ ")"
 toString (Or left right) =
     "(" ++ toString left ++ " | " ++ toString right ++ ")"
-
--- Simple test formula below - REMOVE LATER
-f = And (Var (Nr 1)) (Or (Var(Name "a")) (Not(Var(Name "b"))))
 
 --
 -- Parser for logical expressions
