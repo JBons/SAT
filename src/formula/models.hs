@@ -10,10 +10,10 @@ type Assignment = Map Ident Bool
 universe :: Formula -> [Assignment]
 universe formula =
     let ids = toList $ identifiers formula in
-    fmap fromList $ sequence $ groupBy idEq ( cartProd ids [True,False] )
+    fmap fromList $ sequence $ groupBy (using fst) ( cartProd ids [True,False] )
     where
         cartProd xs ys = [ (x,y) | x <- xs, y <-ys ]
-        idEq (id1,_) (id2,_) = id1 == id2
+        using f x y = (==)(f x)(f y)
 
 eval :: Formula -> Assignment -> Bool
 eval formula assignment = case formula of
