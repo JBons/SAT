@@ -1,7 +1,8 @@
 module Formula where
 
-import           Data.Set (Set, filter, map, singleton, union)
+import           Data.Set (Set, filter, map, singleton, union,size)
 import           Prelude  hiding (all, any, filter, map, print)
+import           Data.Ord(comparing)
 
 default (Int, Float)
 
@@ -15,6 +16,9 @@ data Formula =
       Var Ident | Not Formula
     | And Formula Formula | Or Formula Formula
         deriving (Show,Eq)
+
+instance Ord Formula where
+    compare = comparing (size.identifiers)
 
 impl :: Formula -> Formula -> Formula
 impl a b = Not(And a (Not b))
